@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Zoetis VetScan – Orders</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&family=Kanit:wght@300;400;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      :root{--bg:#f7f7fb;--card:#fff;--fg:#0f172a;--muted:#667085;--accent:#2563eb;--accent-2:#1d4ed8;--violet:#7c3aed;--red:#ef4444;--red-2:#dc2626;--border:#e5e7eb;--shadow:0 10px 30px rgba(15,23,42,.06)}
+      :root[data-theme="dark"]{--bg:#0b1220;--card:#0f172a;--fg:#e5e7eb;--muted:#93a3b8;--accent:#60a5fa;--accent-2:#3b82f6;--violet:#8b5cf6;--red:#f87171;--red-2:#ef4444;--border:#1f2937;--shadow:0 12px 28px rgba(0,0,0,.35)}
+      html,body{margin:0;padding:0;color:var(--fg);font-family:Prompt,Kanit,ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial}
+      body{
+        background:
+          radial-gradient(1100px 700px at -10% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
+          radial-gradient(1000px 650px at 110% -10%, color-mix(in srgb, var(--violet) 12%, transparent), transparent 60%),
+          radial-gradient(1200px 800px at 50% 120%, color-mix(in srgb, var(--accent-2) 12%, transparent), transparent 62%),
+          var(--bg);
+      }
+      *{box-sizing:border-box}
+      .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
+      h1{font-size:22px;margin:0 0 16px;font-weight:600;letter-spacing:.2px;text-align:center}
+      .toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+      .btn{height:44px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);box-shadow:var(--shadow);padding:0 14px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:10px;transition:transform .04s ease,box-shadow .2s ease}
+      .btn:active{transform:translateY(1px)}
+      .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));border-color:transparent;color:#fff}
+      .btn.danger{background:linear-gradient(180deg,#f87171,var(--red));border-color:transparent;color:#fff}
+      .btn-icon{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;border:1px solid var(--border);background:var(--card);box-shadow:var(--shadow);cursor:pointer;color:var(--fg)}
+      .btn-icon svg{width:22px;height:22px;display:block}
+      .btn-icon.danger{background:var(--red);border-color:var(--red-2);color:#fff}
+      .card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+      table{width:100%;border-collapse:separate;border-spacing:0}
+      thead tr{background:color-mix(in srgb, var(--card) 80%, #0000)}
+      th,td{font-size:14px;padding:12px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+      th{font-weight:600;color:var(--fg)}
+      tbody tr:hover{background:color-mix(in srgb, var(--card) 70%, #0000)}
+      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+      .right{text-align:right}
+      .row-empty{color:var(--muted);text-align:center;padding:18px}
+      .footer{margin-top:14px;font-size:12px;color:var(--muted);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+      .pill{padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:var(--card)}
+      .pager{display:flex;gap:8px;align-items:center}
+      .kbd{padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card)}
+      .swal2-title,.swal2-html-container,.swal2-actions,.swal2-confirm,.swal2-cancel{font-family:Prompt,Kanit,ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial}
+      .swal2-popup{width:640px!important;padding:26px!important}
+      .sw{background:var(--card)!important;color:var(--fg)!important;border:1px solid var(--border)!important;box-shadow:var(--shadow)!important}
+      .sw-title{color:var(--fg)!important}
+      .sw-html{color:var(--fg)!important}
+      .swal2-actions{gap:14px!important}
+      .sw-confirm,.sw-cancel{border-radius:12px!important;padding:10px 16px!important;font-weight:700!important}
+      .sw-confirm{background:linear-gradient(180deg,var(--accent),var(--accent-2))!important;color:#fff!important;border:0!important}
+      .sw-cancel{background:var(--card)!important;color:var(--fg)!important;border:1px solid var(--border)!important}
+      .pbox{width:100%}
+      .ptext{font-size:13px;margin-bottom:10px;text-align:center}
+      .pbar{width:100%;height:14px;background:#eef2ff;border:1px solid #dbeafe;border-radius:999px;overflow:hidden}
+      :root[data-theme="dark"] .pbar{background:#0b1b35;border-color:#0f254a}
+      .pfill{height:100%;width:0%;background:linear-gradient(90deg,#60a5fa,#3b82f6)}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Zoetis VetScan – Orders</h1>
+      <div class="toolbar">
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="btnTheme" class="btn-icon" title="Toggle theme" aria-label="Toggle theme">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 6.5 6.5 0 0 1-9 9Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button id="btnSettings" class="btn-icon" title="Settings" aria-label="Settings">
+            <svg viewBox="0 0 512 512" aria-hidden="true">
+              <path d="M471.46,212.99l-42.07-7.92c-3.63-12.37-8.58-24.3-14.79-35.64l24.16-35.37c4.34-6.35,3.54-14.9-1.9-20.34l-38.58-38.58c-5.44-5.44-13.99-6.24-20.34-1.9L342.57,97.4c-11.34-6.21-23.27-11.16-35.64-14.78l-7.92-42.07c-1.42-7.56-8.03-13.04-15.72-13.04h-54.57c-7.69,0-14.3,5.48-15.72,13.04l-7.92,42.07c-12.37,3.63-24.3,8.58-35.64,14.78l-35.37-24.16c-6.35-4.34-14.9-3.54-20.34,1.9l-38.58,38.58c-5.44,5.44-6.24,13.98-1.9,20.34l24.16,35.37c-6.21,11.34-11.16,23.27-14.79,35.64l-42.07,7.92c-7.56,1.42-13.04,8.03-13.04,15.72v54.57c0,7.69,5.48,14.3,13.04,15.72l42.07,7.92c3.63,12.37,8.58,24.3,14.79,35.64l-24.16,35.37c-4.34,6.35-3.54,14.9,1.9,20.34l38.58,38.58c5.44,5.44,13.99,6.24,20.34,1.9l35.37-24.16c11.34,6.21,23.27,11.16,35.64,14.79l7.92,42.07c1.42,7.56,8.03,13.04,15.72,13.04h54.57c7.69,0,14.3-5.48,15.72-13.04l-7.92-42.07c12.37-3.63,24.3-8.58,35.64-14.79l35.37,24.16c6.35-4.34,14.9-3.54,20.34-1.9l38.58-38.58c5.44-5.44,6.24-13.98,1.9-20.34l-24.16-35.37c6.21-11.34,11.16-23.27,14.79-35.64l42.07-7.92c7.56-1.42,13.04-8.03,13.04-15.72v-54.57C484.5,221.02,479.02,214.42,471.46,212.99z" fill="none" stroke="currentColor" stroke-width="24" stroke-linejoin="round"/>
+              <path d="M256,148.26c-59.41,0-107.74,48.33-107.74,107.74c0,59.41,48.33,107.74,107.74,107.74S363.74,315.41,363.74,256C363.74,196.59,315.41,148.26,256,148.26z M256,331.74c-41.76,0-75.74-33.98-75.74-75.74c0-41.76,33.98-75.74,75.74-75.74s75.74,33.98,75.74,75.74C331.74,297.76,297.76,331.74,256,331.74z" fill="none" stroke="currentColor" stroke-width="18" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button id="btnLoad" class="btn primary" title="Fetch data" aria-label="Fetch data">Fetch data</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="pager">
+            <button id="btnPrev" class="btn" title="Prev page" aria-label="Prev page">Prev</button>
+            <span id="pageInfo" class="pill">Page 1/1</span>
+            <button id="btnNext" class="btn" title="Next page" aria-label="Next page">Next</button>
+          </div>
+          <button id="btnDeleteAll" class="btn danger" title="Delete ALL items" aria-label="Delete ALL items">Delete all</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Client Order ID</th>
+              <th>Status</th>
+              <th>Timestamp</th>
+              <th class="right" style="width: 90px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <div id="status" class="pill">Ready</div>
+        <div id="count" class="pill">Showing 0 / Total 0</div>
+        <div id="progress" class="pill">Deleted OK 0 / Failed 0</div>
+        <div class="pill">Theme: <span id="themeLabel" class="kbd">Light</span></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const $ = (s) => document.querySelector(s);
+        const statusEl = $("#status"), countEl = $("#count"), progressEl = $("#progress"), tbody = $("#tbody"), themeLabel = $("#themeLabel"), pageInfoEl = $("#pageInfo");
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        themeLabel.textContent = savedTheme === "dark" ? "Dark" : "Light";
+
+        const swal = Swal.mixin({ customClass: { popup: "sw", title: "sw-title", htmlContainer: "sw-html", confirmButton: "sw-confirm", cancelButton: "sw-cancel" }, buttonsStyling: false });
+
+        let cfg = {
+          apiUrl: "https://vetscanconnect.zoetis.com/vetsync/v1/orders",
+          username: "ac92a468-549a-473e-83d3-0cdaf8c8cc1c",
+          password: "43544b30a2c1dc6949905b7baf632ae12eca8de1f81f20a4da9cca76de570e3a5cad37",
+        };
+
+        const PAGE_SIZE = 10;
+        let allItems = [];
+        let pageIndex = 0;
+        let stopFlag = false;
+        let okCount = 0, failCount = 0;
+
+        const setStatus = (t) => (statusEl.textContent = t);
+        const setCount = (show, total) => (countEl.textContent = `Showing ${show} / Total ${total}`);
+        const setProgress = () => (progressEl.textContent = `Deleted OK ${okCount} / Failed ${failCount}`);
+        const basicHeaders = () => {
+          const u = cfg.username.trim(), p = cfg.password.trim();
+          if (!u || !p) throw new Error("Missing Basic username/password");
+          return { Authorization: "Basic " + btoa(`${u}:${p}`) };
+        };
+        const fmtDate = (iso) => {
+          if (!iso) return "-";
+          const d = new Date(iso);
+          return isNaN(d.getTime()) ? iso : d.toLocaleString();
+        };
+
+        function progressModal(title, total) {
+          swal.fire({
+            title,
+            html: `<div class="pbox"><div id="ptext" class="ptext">0 / ${total} (0%)</div><div class="pbar"><div id="pfill" class="pfill"></div></div></div>`,
+            allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
+            showCancelButton: true, cancelButtonText: "Cancel", focusCancel: true, heightAuto: false,
+            didOpen: () => { const b = Swal.getCancelButton(); if (b) b.addEventListener("click", () => { stopFlag = true; }); },
+          });
+          updateProgress(0, total);
+        }
+        function updateProgress(done, total) {
+          const pct = total ? Math.round((done / total) * 100) : 0;
+          const bar = document.getElementById("pfill");
+          const txt = document.getElementById("ptext");
+          if (bar) bar.style.width = pct + "%";
+          if (txt) txt.textContent = `${done} / ${total} (${pct}%)`;
+        }
+        function closeProgress(){ swal.close(); }
+
+        function sliceForPage() {
+          const start = pageIndex * PAGE_SIZE;
+          const end = Math.min(start + PAGE_SIZE, allItems.length);
+          return { start, end, list: allItems.slice(start, end) };
+        }
+        function updatePager() {
+          const pages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
+          pageIndex = Math.min(pageIndex, pages - 1);
+          pageInfoEl.textContent = `Page ${pages ? pageIndex + 1 : 1}/${pages}`;
+        }
+
+        function render() {
+          tbody.innerHTML = "";
+          updatePager();
+          const { list } = sliceForPage();
+          if (!list.length) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="4" class="row-empty">No data</td>`;
+            tbody.appendChild(tr);
+            setCount(0, allItems.length);
+            return;
+          }
+          for (const r of list) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td class="mono">${r.clientId ?? "-"}</td>
+              <td>${r.status ?? "-"}</td>
+              <td>${fmtDate(r.timestamp)}</td>
+              <td class="right">
+                <button class="btn-icon danger btn-ack" title="Delete (acknowledge)" aria-label="Delete">
+                  <svg viewBox="0 0 28 28" aria-hidden="true">
+                    <path d="M11.8489 22.6922C11.5862 22.7201 11.3509 22.5283 11.3232 22.2638L10.4668 14.0733C10.4392 13.8089 10.6297 13.5719 10.8924 13.5441L11.368 13.4937C11.6307 13.4659 11.8661 13.6577 11.8937 13.9221L12.7501 22.1126C12.7778 22.3771 12.5873 22.614 12.3246 22.6418L11.8489 22.6922Z" fill="currentColor"/><path d="M16.1533 22.6418C15.8906 22.614 15.7001 22.3771 15.7277 22.1126L16.5841 13.9221C16.6118 13.6577 16.8471 13.4659 17.1098 13.4937L17.5854 13.5441C17.8481 13.5719 18.0387 13.8089 18.011 14.0733L17.1546 22.2638C17.127 22.5283 16.8916 22.7201 16.6289 22.6922L16.1533 22.6418Z" fill="currentColor"/><path clip-rule="evenodd" d="M11.9233 1C11.3494 1 10.8306 1.34435 10.6045 1.87545L9.54244 4.37037H4.91304C3.8565 4.37037 3 5.23264 3 6.2963V8.7037C3 9.68523 3.72934 10.4953 4.67218 10.6145L7.62934 26.2259C7.71876 26.676 8.11133 27 8.56729 27H20.3507C20.8242 27 21.2264 26.6513 21.2966 26.1799L23.4467 10.5956C24.3313 10.4262 25 9.64356 25 8.7037V6.2963C25 5.23264 24.1435 4.37037 23.087 4.37037H18.4561L17.394 1.87545C17.1679 1.34435 16.6492 1 16.0752 1H11.9233ZM16.3747 4.37037L16.0083 3.50956C15.8576 3.15549 15.5117 2.92593 15.1291 2.92593H12.8694C12.4868 2.92593 12.141 3.15549 11.9902 3.50956L11.6238 4.37037H16.3747ZM21.4694 11.0516C21.5028 10.8108 21.3154 10.5961 21.0723 10.5967L7.1143 10.6285C6.86411 10.6291 6.67585 10.8566 6.72212 11.1025L9.19806 24.259C9.28701 24.7317 9.69985 25.0741 10.1808 25.0741H18.6559C19.1552 25.0741 19.578 24.7058 19.6465 24.2113L21.4694 11.0516ZM22.1304 8.7037C22.6587 8.7037 23.087 8.27257 23.087 7.74074V7.25926C23.087 6.72743 22.6587 6.2963 22.1304 6.2963H5.86957C5.34129 6.2963 4.91304 6.72743 4.91304 7.25926V7.74074C4.91304 8.27257 5.34129 8.7037 5.86956 8.7037H22.1304Z" fill="currentColor" fill-rule="evenodd"/>
+                  </svg>
+                </button>
+              </td>`;
+            tr.querySelector(".btn-ack").addEventListener("click", async () => {
+              const ok = await swal.fire({ title: "Confirm deletion?", text: r.clientId || "-", icon: "warning", showCancelButton: true, confirmButtonText: "OK", cancelButtonText: "Cancel" }).then(x => x.isConfirmed);
+              if (!ok) return;
+              const done = await ackOne(r);
+              if (done) await swal.fire({ icon: "success", title: "Deleted", text: r.clientId || "-" });
+              else await swal.fire({ icon: "error", title: "Delete failed", text: r.clientId || "-" });
+              removeFromAll(r);
+              render();
+              setCount(sliceForPage().list.length, allItems.length);
+            });
+            tbody.appendChild(tr);
+          }
+          setCount(list.length, allItems.length);
+        }
+
+        function removeFromAll(item) {
+          const before = allItems.length;
+          allItems = allItems.filter(x => !(x.clientId === item.clientId && x.ack === item.ack));
+          if (allItems.length < before && sliceForPage().list.length === 0 && pageIndex > 0) pageIndex--;
+        }
+
+        function parseOrdersXML_incremental(dom, onStep) {
+          const nodes = Array.from(dom.querySelectorAll("orders > order"));
+          const out = [];
+          nodes.forEach((n, idx) => {
+            const clientId = n.getAttribute("client_order_id") || null;
+            const status = n.querySelector(":scope > status")?.textContent?.trim() || null;
+            const timestamp = n.querySelector(":scope > timestamp")?.textContent?.trim() || null;
+            let self = null, poll = null, ack = null, results = null;
+            for (const l of Array.from(n.querySelectorAll(":scope > link"))) {
+              const rel = l.getAttribute("rel");
+              const href = l.getAttribute("href");
+              if (rel === "self") self = href;
+              else if (rel === "poll") poll = href;
+              else if (rel === "acknowledged") ack = href;
+              else if (rel === "results") results = href;
+            }
+            out.push({ clientId, status, timestamp, self, poll, ack, results });
+            if (typeof onStep === "function") onStep(idx + 1, nodes.length);
+          });
+          out.sort((a,b) => (new Date(b.timestamp||0)) - (new Date(a.timestamp||0)));
+          return out;
+        }
+
+        async function loadOrders() {
+          stopFlag = false;
+          setStatus("Fetching...");
+          allItems = [];
+          pageIndex = 0;
+          progressModal("Loading orders...", 100);
+          updateProgress(2, 100);
+          try {
+            const res = await fetch(cfg.apiUrl.trim(), { headers: basicHeaders(), cache: "no-store" });
+            updateProgress(10, 100);
+            if (!res.ok) {
+              const t = await res.text();
+              closeProgress();
+              throw new Error(`HTTP ${res.status}: ${t.slice(0,300)}`);
+            }
+            const xmlText = await res.text();
+            updateProgress(20, 100);
+            const dom = new DOMParser().parseFromString(xmlText, "application/xml");
+            const errNode = dom.querySelector("parsererror");
+            if (errNode) { closeProgress(); throw new Error("XML parse error"); }
+            allItems = parseOrdersXML_incremental(dom, (done, t) => {
+              if (stopFlag) return;
+              const pct = 20 + Math.round((done / Math.max(1,t)) * 80);
+              updateProgress(pct, 100);
+            });
+            closeProgress();
+            setStatus(`Fetched: ${allItems.length} item(s)`);
+            render();
+          } catch (err) {
+            allItems = [];
+            render();
+            setStatus(`Error: ${err.message || err}`);
+            closeProgress();
+            await swal.fire({ icon: "error", title: "Fetch failed", text: String(err.message || err) });
+          }
+        }
+
+        async function ackOne(item) {
+          if (!item?.ack) { await swal.fire({ icon: "error", title: "Missing acknowledged link" }); return false; }
+          try {
+            const headers = { ...basicHeaders(), "Content-Type": "application/xml" };
+            let ok = false;
+            const r1 = await fetch(item.ack, { method: "POST", headers });
+            ok = r1.ok;
+            if (!ok) {
+              const r2 = await fetch(item.ack, { method: "GET", headers: basicHeaders() });
+              ok = r2.ok;
+            }
+            if (!ok) throw new Error("ack failed");
+            okCount++; setProgress();
+            return true;
+          } catch (_e) {
+            failCount++; setProgress(); return false;
+          }
+        }
+
+        async function ackAll() {
+          if (!allItems.length) return swal.fire({ icon:"info", title:"No items to delete" });
+          const ok = await swal.fire({ title: "Delete ALL items?", text: `${allItems.length} item(s)`, icon: "warning", showCancelButton: true, confirmButtonText: "Delete all", cancelButtonText: "Cancel" }).then(x=>x.isConfirmed);
+          if (!ok) return;
+          stopFlag = false; okCount = 0; failCount = 0; setProgress();
+          progressModal("Deleting (ALL)", allItems.length);
+          const clone = [...allItems];
+          for (let i=0;i<clone.length;i++){
+            if (stopFlag) break;
+            const yes = await ackOne(clone[i]);
+            if (yes) { removeFromAll(clone[i]); }
+            updateProgress(i+1, clone.length);
+            await new Promise(rs=>setTimeout(rs, 100));
+          }
+          closeProgress();
+          render();
+          await swal.fire({ icon: failCount ? "warning" : "success", title:"Completed", html:`Deleted OK ${okCount}<br/>Failed ${failCount}` });
+        }
+
+        async function openSettings() {
+          const html = `
+            <div style="display:grid;gap:14px">
+              <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:6px">API URL</div>
+                <input id="s_url" class="sw in" style="width:100%;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 14px" value="${cfg.apiUrl.replaceAll('"','&quot;')}">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div>
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Basic Username</div>
+                  <input id="s_user" class="sw in" style="width:100%;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 14px" value="${cfg.username.replaceAll('"','&quot;')}">
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Basic Password</div>
+                  <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center">
+                    <input id="s_pass" class="sw in" type="password" style="width:100%;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 14px" value="${cfg.password.replaceAll('"','&quot;')}">
+                    <button type="button" id="toggle_pass" class="toggle-btn" style="height:44px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 12px;font-weight:600">Show</button>
+                  </div>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--muted)">After saving, click “Fetch data”.</div>
+            </div>
+          `;
+          const res = await swal.fire({
+            title: "Settings",
+            html,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Cancel",
+            didOpen: () => {
+              const btn = document.getElementById("toggle_pass");
+              const inp = document.getElementById("s_pass");
+              btn.addEventListener("click", () => {
+                if (inp.type === "password") { inp.type = "text"; btn.textContent = "Hide"; }
+                else { inp.type = "password"; btn.textContent = "Show"; }
+              });
+            },
+            preConfirm: () => {
+              const url = document.getElementById("s_url").value.trim();
+              const user = document.getElementById("s_user").value.trim();
+              const pass = document.getElementById("s_pass").value.trim();
+              if (!url || !user || !pass) { swal.showValidationMessage("Please fill all fields"); return false; }
+              return { url, user, pass };
+            },
+          });
+          if (res.isConfirmed) {
+            cfg.apiUrl = res.value.url;
+            cfg.username = res.value.user;
+            cfg.password = res.value.pass;
+            await swal.fire({ icon: "success", title: "Saved" });
+          }
+        }
+
+        $("#btnLoad").addEventListener("click", loadOrders);
+        $("#btnSettings").addEventListener("click", openSettings);
+        $("#btnTheme").addEventListener("click", () => {
+          const cur = document.documentElement.getAttribute("data-theme");
+          const next = cur === "light" ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("theme", next);
+          themeLabel.textContent = next === "dark" ? "Dark" : "Light";
+        });
+        $("#btnPrev").addEventListener("click", () => { if (pageIndex>0){ pageIndex--; render(); } });
+        $("#btnNext").addEventListener("click", () => {
+          const pages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
+          if (pageIndex < pages-1){ pageIndex++; render(); }
+        });
+        $("#btnDeleteAll").addEventListener("click", ackAll);
+        window.addEventListener("load", () => { $("#btnLoad").click(); });
+      })();
+    </script>
+  </body>
+</html>
