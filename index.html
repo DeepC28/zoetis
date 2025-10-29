@@ -93,10 +93,11 @@
         setTheme(localStorage.getItem("menu-theme")||"light");
         themeBtn.addEventListener("click",()=>setTheme(document.documentElement.getAttribute("data-theme")==="light"?"dark":"light"));
         document.addEventListener("keydown",(e)=>{
-          if(e.ctrlKey&&e.key==="Enter"){window.open("http://localhost/zoetis_report/all","_blank","noopener");}
-          if(e.altKey&&e.key==="Enter"){window.open("http://localhost/zoetis_report/20","_blank","noopener");}
+          if(e.ctrlKey&&e.key==="Enter"){window.open("https://deepc28.github.io/zoetis/all","_blank","noopener");}
+          if(e.altKey&&e.key==="Enter"){window.open("https://deepc28.github.io/zoetis/20","_blank","noopener");}
         });
       })();
     </script>
   </body>
 </html>
+
