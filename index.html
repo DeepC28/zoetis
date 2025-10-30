@@ -8,11 +8,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&family=Kanit:wght@300;400;600&display=swap" rel="stylesheet"/>
     <style>
-      :root{--bg:#0b1220;--card:#0f172a;--fg:#e6e8ee;--muted:#9aa4b2;--accent:#60a5fa;--accent2:#3b82f6;--border:#1f2a3a;--shadow:0 10px 30px rgba(0,0,0,.35)}
-      :root[data-theme="light"]{--bg:#f6f8fc;--card:#ffffff;--fg:#0f172a;--muted:#667085;--accent:#2563eb;--accent2:#1d4ed8;--border:#e6eaf0;--shadow:0 12px 26px rgba(15,23,42,.08)}
+      :root{--bg:#0b1220;--card:#0f172a;--fg:#e6e8ee;--muted:#9aa4b2;--accent:#60a5fa;--accent2:#3b82f6;--border:#1f2a3a;--shadow:0 10px 30px rgba(0,0,0,.35);--inputBg:color-mix(in srgb,var(--card) 96%,transparent);--rowHover:color-mix(in srgb,var(--accent) 6%, transparent)}
+      :root[data-theme="light"]{--bg:#f6f8fc;--card:#ffffff;--fg:#0f172a;--muted:#667085;--accent:#2563eb;--accent2:#1d4ed8;--border:#e6eaf0;--shadow:0 12px 26px rgba(15,23,42,.08);--inputBg:#f9fbff;--rowHover:color-mix(in srgb,var(--accent) 10%, transparent)}
       *{box-sizing:border-box}
       html,body{height:100%}
-      body{margin:0;background:radial-gradient(1200px 1200px at 10% -10%,color-mix(in srgb,var(--accent) 14%,#0000),transparent 60%),radial-gradient(900px 900px at 110% 10%,color-mix(in srgb,var(--accent2) 12%,#0000),transparent 55%),var(--bg);font-family:Prompt,Kanit,ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial;color:var(--fg)}
+      body{margin:0;background:
+        radial-gradient(1200px 1200px at 10% -10%,color-mix(in srgb,var(--accent) 14%,#0000),transparent 60%),
+        radial-gradient(900px 900px at 110% 10%,color-mix(in srgb,var(--accent2) 12%,#0000),transparent 55%),
+        var(--bg);
+        font-family:Prompt,Kanit,ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial;color:var(--fg)}
       a{color:inherit;text-decoration:none}
       .wrap{min-height:100%;display:grid;place-items:center;padding:24px}
       .shell{width:min(680px,95vw);border:1px solid var(--border);border-radius:22px;background:color-mix(in srgb,var(--card) 92%, transparent);box-shadow:var(--shadow);overflow:hidden}
@@ -21,7 +25,9 @@
       .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-weight:900}
       .title{font-size:18px;font-weight:700;letter-spacing:.2px}
       .muted{color:var(--muted);font-weight:500}
-      .btn-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);cursor:pointer;transition:transform .04s ease, box-shadow .25s ease}
+      .head-actions{display:flex;gap:10px;align-items:center}
+      .btn-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);cursor:pointer;transition:transform .04s ease, box-shadow .25s ease, filter .15s ease}
+      .btn-icon:hover{filter:brightness(1.08)}
       .btn-icon:active{transform:translateY(1px)}
       .btn-icon svg{width:22px;height:22px}
       .body{padding:26px 20px}
@@ -31,17 +37,80 @@
       .card h3{margin:0 0 8px;font-size:18px}
       .card p{margin:0;color:var(--muted);font-size:14px}
       .cta{margin-top:16px;display:flex;gap:10px;align-items:center}
-      .btn{height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);font-weight:700;letter-spacing:.2px;display:inline-flex;align-items:center;gap:10px;cursor:pointer;transition:transform .04s ease, box-shadow .25s ease, background .2s ease;text-decoration:none}
+      .btn{height:42px;padding:0 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--fg);font-weight:700;letter-spacing:.2px;display:inline-flex;align-items:center;gap:10px;cursor:pointer;transition:transform .04s ease, box-shadow .25s ease, background .2s ease}
       .btn:active{transform:translateY(1px)}
       .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent2));border:0;color:#fff}
       .btn.primary:hover{box-shadow:0 14px 26px color-mix(in srgb,var(--accent2) 28%, transparent)}
+      .btn.ghost{background:transparent}
       .foot{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
       .kbd{padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card)}
       @media (max-width:520px){.grid{grid-template-columns:1fr}}
+
+      /* Modal (settings & login) */
+      .overlay{position:fixed;inset:0;background:color-mix(in srgb, #000 55%, transparent);display:none;place-items:center;padding:20px;z-index:50}
+      .overlay.show{display:grid}
+      .modal{width:min(840px,96vw);background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+      .modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--card) 86%, transparent)}
+      .modal-title{font-weight:800}
+      .modal-body{padding:16px}
+      .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 16px;border-top:1px solid var(--border);background:color-mix(in srgb,var(--card) 86%, transparent)}
+      .input{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--inputBg);color:var(--fg);padding:0 12px}
+      .input:focus{outline:none;border-color:color-mix(in srgb,var(--accent) 55%, transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%, transparent)}
+      .row-fixed{display:grid;grid-template-columns: 1.2fr 1fr 1fr 1fr auto;gap:10px;align-items:end} /* fixed widths */
+      .group{display:grid;gap:6px;min-width:0}
+      .label-inline{display:flex;justify-content:space-between;align-items:center}
+      .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid var(--border);background:var(--card);font-size:12px}
+      .icon-btn{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer}
+      .icon-btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent2));border:0;color:#fff}
+      .icon-btn svg{width:18px;height:18px}
+      .text-right{text-align:right}
+
+      /* Table fixed layout */
+      .table{width:100%;table-layout:fixed;border-collapse:collapse;margin-top:8px}
+      .table thead th{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.2px;border-bottom:1px solid var(--border);padding:10px 8px}
+      .table tbody td{padding:8px;vertical-align:middle;border-bottom:1px dashed var(--border);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .table tbody tr:hover{background:var(--rowHover)}
+      .pw-cell{display:flex;gap:8px;align-items:center}
+      .pw-input{height:36px;flex:1;min-width:0;border-radius:8px;border:1px solid var(--border);background:var(--inputBg);color:var(--fg);padding:0 10px}
+      .eye-btn{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer}
+
+      /* Login screen */
+      .gate{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:60}
+      .gate-card{width:min(420px,92vw);background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+      .gate-title{font-weight:800;font-size:20px;margin-bottom:10px}
+      .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+      .right{justify-content:flex-end}
+      .between{display:flex;justify-content:space-between;align-items:center}
+      .nowrap{white-space:nowrap}
+      .fade-mute{opacity:.7}
     </style>
   </head>
   <body>
-    <div class="wrap">
+    <!-- Auth Gate -->
+    <div id="authGate" class="gate" aria-hidden="true">
+      <div class="gate-card">
+        <div class="between">
+          <div class="gate-title">Sign in to Quick Launcher</div>
+          <button id="btnGateTheme" class="btn-icon" aria-label="Toggle theme on login">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 9-9 6.5 6.5 0 0 1-9 9Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="group mt8">
+          <label>Username</label>
+          <input id="loginUser" class="input" placeholder="Enter username" autocomplete="username" />
+        </div>
+        <div class="group mt8">
+          <label>Password</label>
+          <input id="loginPass" class="input" type="password" placeholder="Enter password" autocomplete="current-password" />
+        </div>
+        <div class="modal-foot right mt12">
+          <button id="btnLogin" class="btn primary">Sign in</button>
+        </div>
+        <div class="muted mt8" style="font-size:12px">* ต้องเข้าสู่ระบบก่อนใช้งานหน้านี้</div>
+      </div>
+    </div>
+
+    <div class="wrap" id="appWrap" style="visibility:hidden">
       <div class="shell">
         <div class="head">
           <div class="brand">
@@ -51,9 +120,25 @@
               <div class="muted">Open destinations in a new tab</div>
             </div>
           </div>
-          <button id="btnTheme" class="btn-icon" aria-label="Toggle theme" title="Toggle theme">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 9-9 6.5 6.5 0 0 1-9 9Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <div class="head-actions">
+            <!-- refined gear icon -->
+            <button id="btnSettings" class="btn-icon" aria-label="Open settings" title="Settings">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M19.5 13.5a7.6 7.6 0 0 0 .05-3l2-1.4-2-3.4-2.3.7a7.7 7.7 0 0 0-2.6-1.5L12 2 9.4 4a7.7 7.7 0 0 0-2.6 1.5l-2.3-.7-2 3.4 2 1.4a7.6 7.6 0 0 0 0 3l-2 1.4 2 3.4 2.3-.7a7.7 7.7 0 0 0 2.6 1.5L12 22l2.6-2a7.7 7.7 0 0 0 2.6-1.5l2.3.7 2-3.4-2-1.4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <!-- refined logout icon -->
+            <button id="btnLogout" class="btn-icon" aria-label="Logout" title="Logout">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M16 12H3m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 6V5a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3v-1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button id="btnTheme" class="btn-icon" aria-label="Toggle theme" title="Toggle theme">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 9-9 6.5 6.5 0 0 1-9 9Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
         </div>
 
         <div class="body">
@@ -63,7 +148,7 @@
                 <h3>/zoetis_report/all</h3>
                 <p>View all results</p>
                 <div class="cta">
-                  <a class="btn primary" href="https://deepc28.github.io/zoetis/all" target="_blank" rel="noopener">Open /all</a>
+                  <a class="btn primary linkNav" data-href="https://deepc28.github.io/zoetis/all" href="#" rel="noopener">Open /all</a>
                 </div>
               </div>
             </div>
@@ -72,7 +157,7 @@
                 <h3>/zoetis_report/20</h3>
                 <p>Show 20 items (oldest → newest)</p>
                 <div class="cta">
-                  <a class="btn primary" href="https://deepc28.github.io/zoetis/20" target="_blank" rel="noopener">Open /20</a>
+                  <a class="btn primary linkNav" data-href="https://deepc28.github.io/zoetis/20" href="#" rel="noopener">Open /20</a>
                 </div>
               </div>
             </div>
@@ -86,19 +171,299 @@
       </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsOverlay" class="overlay" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-head">
+          <div>
+            <div class="modal-title" id="settingsTitle">Auth Settings</div>
+            <div class="muted" id="storageInfo" style="font-size:12px;margin-top:4px"></div>
+          </div>
+          <button id="btnCloseSettings" class="btn-icon" aria-label="Close settings">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- fixed-width input row + Add at the end -->
+          <div class="row-fixed" style="margin-bottom:12px">
+            <div class="group">
+              <label>Provider</label>
+              <input id="inpProv" class="input" placeholder="เช่น Zoetis / IDEXX / Internal" />
+            </div>
+            <div class="group">
+              <label>Owner</label>
+              <input id="inpOwner" class="input" placeholder="ชื่อเจ้าของ" />
+            </div>
+            <div class="group">
+              <label>Username</label>
+              <input id="inpUser" class="input" placeholder="ชื่อผู้ใช้" />
+            </div>
+            <div class="group">
+              <label class="label-inline">Password <span class="fade-mute nowrap" style="font-size:12px"><input id="chkShowAdd" type="checkbox"/> Show</span></label>
+              <input id="inpPass" class="input" type="password" placeholder="รหัสผ่าน" />
+            </div>
+            <button id="btnAdd" class="icon-btn primary" title="Add">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="between" style="margin-bottom:8px">
+            <div class="muted">รายการที่บันทึก</div>
+            <div style="display:flex;gap:8px">
+              <button id="btnExport" class="btn">Export JSON</button>
+              <label class="btn" for="importFile" style="cursor:pointer">Import JSON</label>
+              <input id="importFile" type="file" accept="application/json" hidden />
+            </div>
+          </div>
+
+          <table class="table" id="table" aria-label="Saved providers">
+            <colgroup>
+              <col style="width:22%"/>
+              <col style="width:26%"/>
+              <col style="width:24%"/>
+              <col style="width:22%"/>
+              <col style="width:6%"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Owner</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th class="text-right"></th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+
+          <div class="pill" style="margin-top:10px">Tip: ดับเบิลคลิกที่ Provider / Owner / Username เพื่อแก้ไขเร็ว</div>
+        </div>
+        <div class="modal-foot">
+          <button id="btnClearAll" class="btn ghost">Clear All</button>
+          <button id="btnClose" class="btn primary">Close</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       (function(){
-        const themeBtn=document.getElementById("btnTheme"),themeLabel=document.getElementById("themeLabel");
-        function setTheme(t){document.documentElement.setAttribute("data-theme",t);localStorage.setItem("menu-theme",t);themeLabel.textContent="Theme: "+(t==="light"?"Light":"Dark")}
-        setTheme(localStorage.getItem("menu-theme")||"light");
-        themeBtn.addEventListener("click",()=>setTheme(document.documentElement.getAttribute("data-theme")==="light"?"dark":"light"));
-        document.addEventListener("keydown",(e)=>{
-          if(e.ctrlKey&&e.key==="Enter"){window.open("https://deepc28.github.io/zoetis/all","_blank","noopener");}
-          if(e.altKey&&e.key==="Enter"){window.open("https://deepc28.github.io/zoetis/20","_blank","noopener");}
+        /* ===== Theme ===== */
+        const themeLabel = document.getElementById("themeLabel");
+        function setTheme(t){
+          document.documentElement.setAttribute("data-theme", t);
+          localStorage.setItem("menu-theme", t);
+          if(themeLabel) themeLabel.textContent = "Theme: " + (t === "light" ? "Light" : "Dark");
+        }
+        setTheme(localStorage.getItem("menu-theme") || "light");
+        document.getElementById("btnTheme").addEventListener("click", toggleTheme);
+        document.getElementById("btnGateTheme").addEventListener("click", toggleTheme);
+        function toggleTheme(){
+          const now = document.documentElement.getAttribute("data-theme");
+          setTheme(now === "light" ? "dark" : "light");
+        }
+
+        /* ===== Auth ===== */
+        const AUTH_KEY = "ql-auth-ok";
+        const VALID_USER = "Valentine26";
+        const VALID_PASS = "14521844874";
+        const authGate = document.getElementById("authGate");
+        const appWrap = document.getElementById("appWrap");
+        const loginUser = document.getElementById("loginUser");
+        const loginPass = document.getElementById("loginPass");
+        function showApp(){ authGate.style.display="none"; appWrap.style.visibility="visible"; }
+        function showGate(){ appWrap.style.visibility="hidden"; authGate.style.display="grid"; loginUser.focus(); }
+        function isAuthed(){ return localStorage.getItem(AUTH_KEY) === "1"; }
+        function doLogin(){
+          const u=(loginUser.value||"").trim(), p=loginPass.value||"";
+          if(u===VALID_USER && p===VALID_PASS){ localStorage.setItem(AUTH_KEY,"1"); showApp(); } else { alert("Invalid username or password"); }
+        }
+        document.getElementById("btnLogin").addEventListener("click", doLogin);
+        loginPass.addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+        document.getElementById("btnLogout").addEventListener("click", ()=>{ localStorage.removeItem(AUTH_KEY); showGate(); });
+        if(isAuthed()) showApp(); else showGate();
+
+        /* ===== Navigation guard & shortcuts ===== */
+        function safeOpen(url){ if(!isAuthed()){ alert("Please sign in first"); showGate(); return; } window.open(url,"_blank","noopener"); }
+        document.querySelectorAll(".linkNav").forEach(a=>{
+          a.addEventListener("click",e=>{ e.preventDefault(); safeOpen(a.getAttribute("data-href")); });
         });
+        document.addEventListener("keydown",(e)=>{
+          if(!isAuthed()) return;
+          if(e.ctrlKey && e.key==="Enter") safeOpen("https://deepc28.github.io/zoetis/all");
+          if(e.altKey && e.key==="Enter") safeOpen("https://deepc28.github.io/zoetis/20");
+        });
+
+        /* ===== Data storage via OPFS (JSON file) with localStorage fallback ===== */
+        const SETTINGS_FILE = "auth-providers.json";
+        const SETTINGS_DIR = "auth";
+        const STORAGE_FALLBACK_KEY = "ql-auth-providers";
+        let useOpfs = !!(navigator.storage && navigator.storage.getDirectory);
+
+        async function opfsGetDir(){
+          const root = await navigator.storage.getDirectory();
+          let dir = root;
+          try { dir = await root.getDirectoryHandle(SETTINGS_DIR, { create: true }); } catch {}
+          return dir;
+        }
+        async function opfsReadJson(){
+          try{
+            const dir = await opfsGetDir();
+            const fh = await dir.getFileHandle(SETTINGS_FILE, { create: false });
+            const file = await fh.getFile();
+            const text = await file.text();
+            return JSON.parse(text || "[]");
+          }catch{ return []; }
+        }
+        async function opfsWriteJson(arr){
+          const dir = await opfsGetDir();
+          const fh = await dir.getFileHandle(SETTINGS_FILE, { create: true });
+          const ws = await fh.createWritable();
+          await ws.write(JSON.stringify(arr, null, 2));
+          await ws.close();
+        }
+        function lsRead(){ try{ return JSON.parse(localStorage.getItem(STORAGE_FALLBACK_KEY)||"[]"); }catch{return []} }
+        function lsWrite(arr){ localStorage.setItem(STORAGE_FALLBACK_KEY, JSON.stringify(arr)); }
+
+        async function loadProviders(){ return useOpfs ? await opfsReadJson() : lsRead(); }
+        async function saveProviders(arr){ return useOpfs ? await opfsWriteJson(arr) : lsWrite(arr); }
+
+        /* ===== Settings UI ===== */
+        const settingsOverlay = document.getElementById("settingsOverlay");
+        const storageInfo = document.getElementById("storageInfo");
+        const tbody = document.getElementById("tbody");
+        const inpProv = document.getElementById("inpProv");
+        const inpOwner = document.getElementById("inpOwner");
+        const inpUser = document.getElementById("inpUser");
+        const inpPass = document.getElementById("inpPass");
+        const chkShowAdd = document.getElementById("chkShowAdd");
+        const btnClose = document.getElementById("btnClose");
+
+        chkShowAdd.addEventListener("change", ()=>{ inpPass.type = chkShowAdd.checked? "text":"password"; });
+
+        document.getElementById("btnSettings").addEventListener("click", async ()=>{
+          if(!isAuthed()){ alert("Please sign in first"); return; }
+          settingsOverlay.classList.add("show");
+          settingsOverlay.setAttribute("aria-hidden","false");
+          storageInfo.textContent = useOpfs
+            ? `Storage: JSON file (${SETTINGS_DIR}/${SETTINGS_FILE}) in this origin`
+            : `Storage: localStorage fallback (browser doesn't support OPFS)`;
+          await renderRows();
+        });
+        document.getElementById("btnCloseSettings").addEventListener("click", closeSettings);
+        btnClose.addEventListener("click", closeSettings);
+        settingsOverlay.addEventListener("click",(e)=>{ if(e.target===settingsOverlay) closeSettings(); });
+        document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && settingsOverlay.classList.contains("show")) closeSettings(); });
+        function closeSettings(){
+          settingsOverlay.classList.remove("show");
+          settingsOverlay.setAttribute("aria-hidden","true");
+        }
+
+        async function renderRows(){
+          const list = await loadProviders();
+          tbody.innerHTML = "";
+          list.forEach((row, idx)=>{
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td data-k="name" title="${escapeAttr(row.name||'')}">${escape(row.name||"")}</td>
+              <td data-k="owner" title="${escapeAttr(row.owner||'')}">${escape(row.owner||"")}</td>
+              <td data-k="user" title="${escapeAttr(row.user||'')}">${escape(row.user||"")}</td>
+              <td class="pw-cell">
+                <input class="pw-input" type="password" value="${escapeAttr(row.pass||"")}" />
+                <button class="eye-btn" title="Show/Hide password" data-idx="${idx}">
+                  <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z" stroke="currentColor" stroke-width="1.6"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+                  </svg>
+                </button>
+              </td>
+              <td class="text-right">
+                <button class="icon-btn btnDel" title="Delete" data-idx="${idx}">
+                  <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true">
+                    <path d="M3 6h18M7 6l1 14h8l1-14M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+
+          // inline edit (dblclick) – fixed width cells, no layout shift
+          tbody.querySelectorAll("td[data-k]").forEach(td=>{
+            td.ondblclick = async ()=>{
+              const k=td.getAttribute("data-k"); const old=td.textContent||"";
+              const input=document.createElement("input"); input.className="input"; input.value=old; input.style.height="36px";
+              td.innerHTML=""; td.appendChild(input); input.focus(); input.select();
+              input.addEventListener("blur", async ()=>{
+                const idx=[...tbody.children].indexOf(td.parentElement);
+                const list = await loadProviders();
+                list[idx][k]=input.value;
+                await saveProviders(list); await renderRows();
+              });
+              input.addEventListener("keydown", e=>{
+                if(e.key==="Enter") input.blur();
+                if(e.key==="Escape") renderRows();
+              });
+            };
+          });
+
+          // show/hide password per row
+          tbody.querySelectorAll(".eye-btn").forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+              const ip = btn.closest("td").querySelector(".pw-input");
+              ip.type = (ip.type==="password") ? "text" : "password";
+            });
+          });
+
+          // delete row
+          tbody.querySelectorAll(".btnDel").forEach(btn=>{
+            btn.addEventListener("click", async ()=>{
+              const idx = Number(btn.getAttribute("data-idx"));
+              const list = await loadProviders();
+              list.splice(idx,1);
+              await saveProviders(list);
+              await renderRows();
+            });
+          });
+        }
+
+        // Add new record (button now at end of the input row)
+        document.getElementById("btnAdd").addEventListener("click", async ()=>{
+          const name=(inpProv.value||"").trim();
+          const owner=(inpOwner.value||"").trim();
+          const user=(inpUser.value||"").trim();
+          const pass=inpPass.value||"";
+          if(!name){ alert("กรอก Provider"); return; }
+          const list=await loadProviders();
+          list.push({name, owner, user, pass});
+          await saveProviders(list);
+          inpProv.value=inpOwner.value=inpUser.value=inpPass.value="";
+          await renderRows();
+        });
+
+        // Export/Import
+        document.getElementById("btnExport").addEventListener("click", async ()=>{
+          const data = JSON.stringify(await loadProviders(), null, 2);
+          const blob = new Blob([data], {type:"application/json"});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href=url; a.download="auth-providers.json"; document.body.appendChild(a); a.click(); a.remove();
+          URL.revokeObjectURL(url);
+        });
+        document.getElementById("importFile").addEventListener("change", async (e)=>{
+          const f=e.target.files?.[0]; if(!f) return;
+          const text=await f.text();
+          try{
+            const arr=JSON.parse(text);
+            if(!Array.isArray(arr)) throw new Error("Invalid JSON");
+            await saveProviders(arr);
+            await renderRows();
+          }catch{ alert("ไฟล์ไม่ถูกต้อง"); }
+          e.target.value="";
+        });
+
+        function escape(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+        function escapeAttr(s){ return escape(s).replace(/"/g,"&quot;"); }
       })();
     </script>
   </body>
 </html>
-
-
